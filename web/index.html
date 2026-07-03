@@ -21,6 +21,18 @@
   Tax delinquency figures are a city snapshot from June 2022, the last parcel-level release.
   Click any point for the receipt.
 </div>
+<div class="askbar">
+  <form id="askform">
+    <input id="askq" type="text" placeholder="Ask the data: publicly owned, tax delinquent 5+ years in 19133" autocomplete="off">
+    <button type="submit">ask</button>
+  </form>
+  <div class="ask-examples">try:
+    <a href="#" data-q="Which publicly owned parcels in 19133 have been tax delinquent 5 or more years?">public + delinquent 5+ years in 19133</a> ·
+    <a href="#" data-q="Which owner holds the most likely-vacant properties, and what do they owe?">who holds the most, and what do they owe</a>
+  </div>
+  <div id="askout" hidden></div>
+  <div class="ask-note">Answers are generated from the database on this page. Every claim links to its record. Delinquency facts are the city's June 2022 snapshot.</div>
+</div>
 <div class="map-wrap">
   <div id="map"></div>
   <div class="searchbox">
@@ -36,5 +48,6 @@
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="map.js"></script>
+<script src="ask.js"></script>
 </body>
 </html>

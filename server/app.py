@@ -158,6 +158,22 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json({"error": "server error"}, 500)
         return super().do_GET()
 
+    def do_POST(self):
+        url = urlparse(self.path)
+        try:
+            length = min(int(self.headers.get("Content-Length", 0)), 100_000)
+            payload = json.loads(self.rfile.read(length) or b"{}")
+            if url.path == "/api/ask":
+                import ask
+                return self.send_json(ask.answer(payload.get("question", "")))
+            if url.path == "/api/draft":
+                import draft
+                return self.send_json(draft.draft(payload))
+            return self.send_json({"error": "unknown endpoint"}, 404)
+        except Exception as err:
+            sys.stderr.write("api error: %r\n" % err)
+            return self.send_json({"error": "server error"}, 500)
+
 
 def main():
     port = int(os.environ.get("PORT", "8080"))
