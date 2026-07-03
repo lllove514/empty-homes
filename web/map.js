@@ -5,10 +5,19 @@
   var KIND_COLOR = ["#8c1d1d", "#b3641c", "#5a6b7d", "#6b5a7d"];
   var KIND_NAME = ["public agency", "LLC / corporate", "individual", "other"];
 
-  var map = L.map("map", { preferCanvas: true }).setView([39.99, -75.13], 12);
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  var PHILLY = L.latLngBounds([39.85, -75.33], [40.16, -74.92]);
+  var map = L.map("map", {
+    preferCanvas: true,
+    minZoom: 11,
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    maxBounds: PHILLY.pad(0.05),
+    maxBoundsViscosity: 1.0,
+    zoomSnap: 0.5,
+    wheelPxPerZoomLevel: 90
+  }).setView([39.99, -75.13], 12);
+  L.tileLayer("https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
   }).addTo(map);
   var renderer = L.canvas({ padding: 0.4 });
 
@@ -24,11 +33,11 @@
       var lon = p[0], lat = p[1], opa = p[2], score = p[3], kind = p[4];
       var marker = L.circleMarker([lat, lon], {
         renderer: renderer,
-        radius: 3 + Math.min(score, 10) * 0.45,
-        color: KIND_COLOR[kind],
+        radius: 4.5 + Math.min(score, 10) * 0.55,
+        color: "#2b2b2b",
+        weight: 0.8,
         fillColor: KIND_COLOR[kind],
-        fillOpacity: 0.75,
-        weight: 1
+        fillOpacity: 0.85
       }).addTo(map);
       marker.bindPopup(
         '<b><a href="parcel.html#' + opa + '">parcel ' + opa + "</a></b><br>" +
@@ -36,7 +45,7 @@
         '<br><a href="parcel.html#' + opa + '">full receipt →</a>');
       bounds.push([lat, lon]);
     });
-    if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+    if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
   });
 
   /* search */

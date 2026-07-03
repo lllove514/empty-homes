@@ -13,6 +13,9 @@
 
   function linkify(text) {
     return esc(text)
+      .replace(/^#{1,4}\s*/gm, "")                       /* strip markdown headers */
+      .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")          /* **bold** -> bold */
+      .replace(/^[-*]\s+/gm, "· ")                       /* list markers -> middots */
       .replace(/\[opa:(\d{9})\]/g,
         '<a href="parcel.html#$1">[parcel $1]</a>')
       .replace(/\[owner:(\d+)\]/g,
