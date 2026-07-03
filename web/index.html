@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empty Homes: vacant property in Philadelphia, mapped and owned</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header>
+  <h1><a href="index.html">Empty Homes</a></h1>
+  <span class="tagline" id="stats">loading…</span>
+  <nav>
+    <a href="owners.html">Who owns the most</a>
+    <a href="data.html">Data &amp; method</a>
+  </nav>
+</header>
+<div class="notice">
+  Every point is a property the City of Philadelphia flags as likely vacant.
+  Tax delinquency figures are a city snapshot from June 2022, the last parcel-level release.
+  Click any point for the receipt.
+</div>
+<div class="map-wrap">
+  <div id="map"></div>
+  <div class="searchbox">
+    <input id="q" type="text" placeholder="Search your block, e.g. 2537 N 11TH ST" autocomplete="off">
+    <div class="results" id="results" hidden></div>
+  </div>
+  <div class="legend">
+    <div><span class="dot" style="background:#8c1d1d"></span>public agency</div>
+    <div><span class="dot" style="background:#b3641c"></span>LLC / corporate</div>
+    <div><span class="dot" style="background:#5a6b7d"></span>individual</div>
+    <div><span class="dot" style="background:#6b5a7d"></span>other</div>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map.js"></script>
+</body>
+</html>
