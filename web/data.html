@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data &amp; method · Empty Homes</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header>
+  <h1><a href="index.html">Empty Homes</a></h1>
+  <nav>
+    <a href="index.html">Map</a>
+    <a href="owners.html">Who owns the most</a>
+  </nav>
+</header>
+<main>
+<h2>Data and method</h2>
+
+<p>Everything on this site is assembled from four public City of Philadelphia
+datasets on OpenDataPhilly: the L&amp;I Vacant Property Indicators (the parcel
+spine), the OPA property assessment file (ownership, values, mailing
+addresses), the Department of Revenue's parcel-level real estate tax
+delinquency file, and open L&amp;I violations. Parcels join across all four on
+the OPA account number.</p>
+
+<p>The method, in five steps. Fetch: each dataset is pulled from the city's
+API with the schema validated at fetch time, so drift fails loudly instead of
+silently. Join: everything lands in one SQLite database, one row per
+likely-vacant parcel. Resolve: raw owner strings are normalized and grouped;
+public agencies resolve through a hand-curated alias list you can read in the
+repository (<code>pipeline/agencies.json</code>); non-public owners that share
+a mailing address are linked as a network. Score: every parcel gets a
+transparent accountability score, computed as
+<code>min(years tax-delinquent, 10) + min(open violations, 5) + 3 if publicly
+owned + 2 if flagged for sheriff sale</code>. Verify: a check script re-derives
+totals from the raw files and spot-checks parcels against the city's live API
+before anything is published.</p>
+
+<h2>Download</h2>
+<p>
+  <a href="data/empty_homes.csv">empty_homes.csv</a> — one row per parcel, all joined fields<br>
+  <a href="data/empty_homes.sqlite">empty_homes.sqlite</a> — the full database (parcels, owners, aliases, violations)
+</p>
+
+<h2>Column reference (CSV)</h2>
+<table class="receipt">
+<tr><th>opa_id</th><td>9-digit OPA account number, the universal join key for Philadelphia property records</td></tr>
+<tr><th>address, zip, council_district, lat, lon</th><td>location, from the vacancy indicators</td></tr>
+<tr><th>vacant_flag, vacant_rank</th><td>the city's likely-vacant flag (Land or Building) and model rank</td></tr>
+<tr><th>owner, owner_kind</th><td>resolved owner and its type: public, llc, individual, other</td></tr>
+<tr><th>owner_raw</th><td>the owner string exactly as the public record has it</td></tr>
+<tr><th>market_value, sale_date, sale_price</th><td>from the OPA assessment file</td></tr>
+<tr><th>delinquent, years_owed, oldest_year_owed, total_due, sheriff_sale</th><td>from the June 2022 delinquency snapshot</td></tr>
+<tr><th>open_violations</th><td>count of open L&amp;I violations on the parcel</td></tr>
+<tr><th>score</th><td>the accountability score, formula above</td></tr>
+</table>
+
+<h2>Honest limitations</h2>
+<p>The city stopped publishing parcel-level tax delinquency in June 2022, so
+every delinquency fact here is that snapshot and is labeled as such. "Likely
+vacant" is the city's model-based indicator, not a field inspection; this
+site inherits its false positives and never says "abandoned". A shared
+mailing address between two owners is a documented fact, not proof of common
+control. Owners, including private individuals, appear exactly as the public
+record names them; nothing is added beyond what the city publishes.</p>
+
+<p>All source data is subject to the City of Philadelphia's open data terms
+of use. This project's own code and cleaned dataset are free to reuse; the
+method travels to any city with parcel-level open data.</p>
+</main>
+</body>
+</html>

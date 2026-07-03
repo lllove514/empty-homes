@@ -1,9 +1,11 @@
-"""Export static JSON for the web frontend.
+"""Export static JSON for the web frontend, plus the open-data downloads.
 
 Run:  python3 pipeline/export_web.py
 """
+import csv
 import json
 import os
+import shutil
 import sqlite3
 import time
 
@@ -45,7 +47,25 @@ def main():
     print("points.json: %d parcels, %.1f KB" % (len(points), size / 1024))
     print("meta.json:", meta)
     assert size < 3_000_000, "points.json too large to serve comfortably"
+
+    # open-data downloads
+    csv_path = os.path.join(WEB_DATA, "empty_homes.csv")
+    cur = con.execute(
+        "SELECT p.opa_id, p.address, p.zip, p.council_district, p.lat, p.lon,"
+        " p.vacant_flag, p.vacant_rank, o.canonical_name AS owner,"
+        " o.kind AS owner_kind, p.owner_raw, p.market_value, p.sale_date,"
+        " p.sale_price, p.delinquent, p.years_owed, p.oldest_year_owed,"
+        " p.total_due, p.sheriff_sale, p.open_violations, p.score"
+        " FROM parcels p LEFT JOIN owners o ON o.id = p.owner_id"
+        " ORDER BY p.opa_id")
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([d[0] for d in cur.description])
+        writer.writerows(cur)
+    print("empty_homes.csv: %.1f KB" % (os.path.getsize(csv_path) / 1024))
     con.close()
+    shutil.copyfile(DB, os.path.join(WEB_DATA, "empty_homes.sqlite"))
+    print("empty_homes.sqlite copied")
 
 
 if __name__ == "__main__":
