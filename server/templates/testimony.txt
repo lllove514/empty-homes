@@ -1,0 +1,11 @@
+Public comment / testimony paragraph (about 60 seconds spoken)
+
+My name is {your_name}. I want to put one address on the record:
+{address}, OPA account {opa_id}. The city's own data flags this property
+as likely vacant ({vacant_flag}). It is owned by {owner}.{delinquency_line}{violations_line}
+This is one of {total_vacant} properties this database flags as likely
+vacant in Philadelphia. Every number I just said comes from the city's
+public records, and anyone can check them by that account number. Homes
+are sitting empty while people sleep outside. I am asking for a public
+timeline for getting this property, and the others like it, back into
+use.

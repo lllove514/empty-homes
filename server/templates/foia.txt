@@ -1,0 +1,33 @@
+RIGHT-TO-KNOW REQUEST (Pennsylvania Right-to-Know Law, 65 P.S. 67.101 et seq.)
+
+To: Open Records Officer
+{agency}
+
+From: {your_name}
+{your_address}
+
+Date: {date}
+
+Dear Open Records Officer,
+
+Under the Pennsylvania Right-to-Know Law, I request copies of the following
+public records concerning the property at {address}, Philadelphia, PA
+(OPA account number {opa_id}):
+
+1. All records of inspections, vacancy determinations, or property
+   maintenance actions for this parcel from 2015 to the present.
+2. All records concerning plans for the disposition, rehabilitation, sale,
+   or transfer of this parcel.
+3. Records sufficient to show the annual cost to the agency of holding
+   this parcel, including maintenance, security, and insurance.
+
+Context from public city data: the city's vacancy indicators flag this
+parcel as likely vacant ({vacant_flag}).{delinquency_line}{violations_line}
+
+If any part of this request is denied, please cite the specific legal
+basis for each denial and release all severable portions. I ask that
+records be provided electronically. If fees exceed $10, contact me before
+fulfilling the request.
+
+Sincerely,
+{your_name}

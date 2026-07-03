@@ -71,7 +71,20 @@
         scoreRows +
         '<p style="margin-top:18px">' +
         '<button id="copy">copy link to this parcel</button> ' +
+        '<button id="card" class="secondary">download share card</button> ' +
         '<a class="btn secondary" href="index.html">back to map</a></p>' +
+        "<h2 style='margin-top:22px'>Take action</h2>" +
+        "<p class='sub'>Drafts are filled from this parcel's public record, nothing else. " +
+        "Review every fact, add your name, and send it yourself.</p>" +
+        "<p>" +
+        '<button class="draft-btn" data-type="foia">records request (right-to-know)</button> ' +
+        '<button class="draft-btn" data-type="council">letter to the council office</button> ' +
+        '<button class="draft-btn" data-type="testimony">testimony paragraph</button>' +
+        "</p>" +
+        '<div id="draftout" hidden>' +
+        '<div class="notice" id="draftnotice"></div>' +
+        '<textarea id="drafttext" style="width:100%;height:340px;font-family:monospace;font-size:13px;"></textarea>' +
+        '<p><button id="draftcopy" class="secondary">copy draft</button></p></div>' +
         '<p class="footnote">"Likely vacant" is the city\'s model-based indicator, not a field inspection. ' +
         "The score formula is fixed and public: min(years delinquent, 10) + min(open violations, 5) " +
         "+ 3 if publicly owned + 2 if flagged for sheriff sale.</p>";
@@ -80,6 +93,51 @@
         navigator.clipboard.writeText(location.href).then(function () {
           document.getElementById("copy").textContent = "link copied";
         });
+      };
+
+      document.getElementById("card").onclick = function () {
+        var facts = [];
+        if (p.vacant_flag) facts.push("flagged likely vacant by the city (" + p.vacant_flag.toLowerCase() + ")");
+        if (p.delinquent) facts.push(p.years_owed + " year(s) tax-delinquent, " +
+          (dollars(p.total_due) || "") + " due, as of June 2022");
+        if (p.open_violations) facts.push(p.open_violations + " open L&I violation(s)");
+        facts.push("owned by " + (p.owner_name || p.owner_raw || "unknown"));
+        window.renderShareCard({
+          title: p.address,
+          subtitle: "OPA account " + p.opa_id + " · accountability score " + p.score,
+          facts: facts,
+          permalink: location.host + "/parcel.html%23" + p.opa_id
+        }, "empty-homes-" + p.opa_id + ".png");
+      };
+
+      document.querySelectorAll(".draft-btn").forEach(function (b) {
+        b.onclick = function () {
+          b.textContent = "drafting…";
+          fetch("/api/draft", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: b.dataset.type, opa_id: p.opa_id })
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              b.textContent = b.dataset.type === "foia" ? "records request (right-to-know)"
+                : b.dataset.type === "council" ? "letter to the council office" : "testimony paragraph";
+              var box = document.getElementById("draftout");
+              if (d.error) {
+                box.hidden = false;
+                document.getElementById("draftnotice").textContent = d.error;
+                return;
+              }
+              box.hidden = false;
+              document.getElementById("draftnotice").textContent = "DRAFT. " + d.review_notice;
+              document.getElementById("drafttext").value = d.draft;
+              box.scrollIntoView({ behavior: "smooth" });
+            });
+        };
+      });
+      document.getElementById("draftcopy").onclick = function () {
+        navigator.clipboard.writeText(document.getElementById("drafttext").value)
+          .then(function () { document.getElementById("draftcopy").textContent = "copied"; });
       };
     })
     .catch(function () {

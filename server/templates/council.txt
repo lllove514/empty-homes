@@ -1,0 +1,30 @@
+To: Councilmember for District {district}
+Philadelphia City Council
+City Hall, Philadelphia, PA 19107
+
+From: {your_name}
+{your_address}
+
+Date: {date}
+
+Dear Councilmember,
+
+I am writing about the property at {address} (OPA account {opa_id}), in
+your district. The city's own vacancy indicators flag it as likely vacant
+({vacant_flag}), owned by {owner}.{delinquency_line}{violations_line}
+
+Homes should not sit empty while people in this city sleep outside. I ask
+your office to:
+
+1. State what plan, if any, exists for returning this property to use.
+2. If the owner is a public agency, press that agency for a disposition
+   timeline in writing.
+3. If the owner is private, confirm whether enforcement tools available to
+   the city (code enforcement, tax lien action, conservatorship under Act
+   135) have been considered.
+
+I would appreciate a written response. All facts above come from public
+city records and can be verified at the OPA account number listed.
+
+Sincerely,
+{your_name}
