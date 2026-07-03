@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who owns the most empty homes · Empty Homes</title>
+<link rel="stylesheet" href="app.css">
+<style>
+table.board { border-collapse: collapse; width: 100%; background: #fffdf8; border: 1px solid #cdc6b4; }
+table.board td, table.board th { padding: 8px 12px; border-bottom: 1px solid #e5dfd0; font-size: 14.5px; text-align: left; }
+table.board th { color: #6a6455; font-weight: normal; border-bottom: 2px solid #cdc6b4; }
+table.board td.num, table.board th.num { text-align: right; }
+.filters { margin: 12px 0; }
+.filters button { margin-right: 6px; }
+.filters button.off { background: #fffdf8; color: #1f1f1f; }
+.headline { font-size: 17px; background: #fffdf8; border: 1px solid #cdc6b4; padding: 12px 16px; margin: 14px 0; }
+.owner-detail { background: #fffdf8; border: 1px solid #cdc6b4; padding: 14px 18px; margin: 14px 0; }
+.owner-detail table { width: 100%; border-collapse: collapse; }
+.owner-detail td, .owner-detail th { padding: 5px 8px; font-size: 13.5px; border-bottom: 1px solid #eee; text-align: left; }
+.cluster-note { background: #efe9da; padding: 8px 12px; font-size: 13.5px; margin: 10px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1><a href="index.html">Empty Homes</a></h1>
+  <nav>
+    <a href="index.html">Map</a>
+    <a href="data.html">Data &amp; method</a>
+  </nav>
+</header>
+<div class="notice">
+  Ranked by number of likely-vacant properties held. Tax figures are the city's
+  June 2022 parcel-level snapshot. Owners appear exactly as the public record names them.
+</div>
+<main id="main">loading…</main>
+<script src="owners.js"></script>
+</body>
+</html>
