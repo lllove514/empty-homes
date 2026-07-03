@@ -2,38 +2,55 @@
 
 A public map of every likely-vacant property in Philadelphia: who owns it, how long it has sat empty and tax-delinquent, and a way for anyone to pull the receipts on a house, a block, or the landlord holding the most.
 
-Built with and for [Poor People's Army](https://ppehrc.org) (PPEHRC), whose core fight is publicly owned homes sitting vacant while people sleep outside. Their argument has always been provable from public records; those records just live in four city datasets that do not talk to each other. This project joins them.
+![Citywide map of 36,713 likely-vacant properties](docs/map.png)
+
+## What the data shows (July 2026 build)
+
+The city's own records, joined for the first time in one place:
+
+| | |
+|---|---|
+| Likely-vacant properties citywide | **36,713** |
+| Held by public agencies | **7,947** (City of Philadelphia 3,184 · Land Bank 2,332 · Redevelopment Authority 1,275 · Housing Authority 1,024) |
+| Tax-delinquent (as of June 2022, the city's last parcel-level release) | **11,453 properties, $86.6M owed** |
+| Longest-running delinquency | **45 years** |
+| Open L&I violations on vacant parcels | **34,418** |
+| Largest shell network found by entity resolution | **32 LLCs sharing one Center City mailing address, holding 409 vacant parcels** |
+
+Built with and for [Poor People's Army](https://ppehrc.org) (PPEHRC), the Philadelphia housing-rights movement whose core argument is exactly this: homes sit empty while people sleep outside. The facts were always public. They just lived in four city datasets that do not talk to each other.
 
 ## What it does
 
-- **Map + search your block.** Every parcel the city flags as likely vacant, colored by who owns it. Type an address, get the empty homes around it.
-- **The receipt.** Each parcel page shows owner, years tax-delinquent, open violations, market value, and a transparent accountability score, every fact labeled with its source dataset.
-- **Who owns the most.** A ranked leaderboard of owners, public agencies and private landlords alike. Owner names are entity-resolved: agency name variants merge, and LLCs sharing a mailing address are linked as a network. The fixture data alone surfaced one Center City address serving as the mailing address for 12 differently-named land-holding LLCs.
-- **Ask the data.** A grounded Claude layer answers plain-language questions ("publicly owned, tax delinquent 5+ years in 19133"). The model can only speak from three read-only database tools, must cite every claim as `[opa:...]` or `[owner:...]`, and the server verifies each citation against that request's actual tool results. Unverifiable citation, no answer. The model never invents a property.
-- **Take action.** One click drafts a Pennsylvania Right-to-Know request, a council office letter, or a testimony paragraph, filled from the parcel's record by plain template substitution. No model in that path on purpose: artifacts a person signs and sends should contain nothing a model could get wrong.
-- **Open data give-back.** The cleaned, joined dataset is downloadable as CSV and SQLite from the Data page, with the method documented.
+**Search your block.** Type an address, see every likely-vacant property around it and who owns it. Every parcel page is a receipt: owner, years delinquent, open violations, market value, each fact labeled with its source dataset, plus a transparent accountability score anyone can recompute.
+
+![Parcel receipt with itemized accountability score](docs/parcel.png)
+
+**Who owns the most.** A ranked leaderboard of owners, public agencies and private landlords both. Owner names are entity-resolved: agency name variants merge through a hand-curated alias list, and LLCs sharing a mailing address are linked as a network. That is how 32 differently-named LLCs (Land Ho, Turf Wizard, Plotz, Stable Genius, Lots and Found...) turned out to be one operation at 25 S 19th St.
+
+![Leaderboard of owners with the most vacant properties](docs/leaderboard.png)
+
+**Ask the data.** A grounded Claude layer answers plain-language questions ("publicly owned, tax delinquent 5+ years in 19133"). The model can only speak through three read-only database tools, must cite every claim as `[opa:...]` or `[owner:...]`, and the server verifies every citation against that request's actual tool results before releasing the answer. Unverifiable citation, no answer. The model cannot invent a property.
+
+**Take action.** One click drafts a Pennsylvania Right-to-Know request, a council office letter, or a testimony paragraph, filled from the parcel's record by plain template substitution. No model in that path on purpose: an artifact a person signs and sends should contain nothing a model could get wrong.
+
+**Open data.** The cleaned, joined dataset downloads as CSV and SQLite from the Data page, method documented, so journalists and researchers can build on it.
 
 ## Quickstart
 
-Requires Python 3.10+. No packages to install; the pipeline is standard library only.
+Python 3.10+. No packages to install; the pipeline is standard library only.
 
 ```
 python3 pipeline/run_all.py     # fetch all four city datasets, build, verify (a few minutes)
-python3 server/app.py           # serve the site at http://localhost:8080
+python3 server/app.py           # serve at http://localhost:8080  (PORT=8090 to change)
 ```
 
-For the AI layer, put a key in `.env` at the repo root: `ANTHROPIC_API_KEY=sk-...`. Everything except "Ask the data" works without it.
+For the AI layer, put a key in `.env` at the repo root: `ANTHROPIC_API_KEY=sk-...`. Everything else works without it.
 
-Each pipeline stage is also runnable and checkable on its own; every script has a `--check` mode that validates its output against the source, and `pipeline/check_db.py --live` re-fetches random parcels from the city's API and compares them to the built database to the cent.
+Every pipeline stage has a `--check` mode that validates its output against the source, and `pipeline/check_db.py --live` re-fetches random parcels from the city's API and compares them to the built database to the cent. `server/test_grounding.py` proves the citation verifier fails closed, offline.
 
 ## Data sources
 
-All public, all City of Philadelphia, via OpenDataPhilly:
-
-- Vacant Property Indicators (L&I), the parcel spine
-- Properties and Assessment History (OPA), ownership, values, mailing addresses
-- Real Estate Tax Delinquencies (Revenue), parcel-level snapshot
-- L&I Violations, open violations only
+All public, all City of Philadelphia, via OpenDataPhilly: Vacant Property Indicators (L&I, the parcel spine), Properties and Assessment History (OPA), Real Estate Tax Delinquencies (Revenue), and open L&I Violations. Parcels join on the OPA account number.
 
 ## The score
 
@@ -46,19 +63,19 @@ score = min(years tax-delinquent, 10)
       + 2 if flagged for sheriff sale
 ```
 
-Public ownership scores points because a public agency holding housing vacant carries a public duty that a private owner does not.
+Public ownership scores points because a public agency holding housing vacant carries a public duty a private owner does not.
 
 ## Known limitations
 
-- The city stopped publishing parcel-level tax delinquency in June 2022. Every delinquency fact is that snapshot and is labeled "as of June 2022" wherever it appears. The newer Revenue tax-balances dataset is aggregated to ZIP/district/tract and cannot support parcel-level claims.
-- "Likely vacant" is the city's model-based indicator, not a field inspection. The project inherits its false positives and says "likely-vacant", never "abandoned".
+- The city stopped publishing parcel-level tax delinquency in June 2022. Every delinquency fact is that snapshot and is labeled so wherever it appears.
+- "Likely vacant" is the city's model-based indicator, not a field inspection. This project inherits its false positives and says "likely-vacant", never "abandoned".
 - A shared mailing address links owners as a network. That is a documented fact, not proof of common control, and the UI says so.
 - Owners appear exactly as the public record names them. Nothing is enriched beyond what the city publishes.
 
 ## Boundary
 
-This is an accountability tool built entirely on public records, for lawful pressure: reporting, organizing, testimony, records requests, litigation. It does not and will not rank or select properties for entry or occupation, and the ask endpoint refuses that shape of question.
+This is an accountability tool built entirely on public records, for lawful pressure: reporting, organizing, testimony, records requests, litigation. It does not rank or select properties for entry or occupation, and the ask endpoint refuses that shape of question.
 
 ## Taking it to another city
 
-Swap the four fetchers in `pipeline/` for your city's parcel, vacancy, delinquency, and violations datasets, keep the OPA-number equivalent as the join key, and edit `pipeline/agencies.json` for your local public agencies. Everything downstream is city-agnostic.
+Swap the four fetchers in `pipeline/` for your city's parcel, vacancy, delinquency, and violations datasets, keep the parcel-id join key, and edit `pipeline/agencies.json` for your local public agencies. Everything downstream is city-agnostic.
