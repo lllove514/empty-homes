@@ -44,7 +44,8 @@
 
       var vio = p.violations.length
         ? p.violations.map(function (v) {
-            return esc((v.date || "date unknown") + " · " + v.title);
+            var d = v.date ? String(v.date).slice(0, 10) : "date unknown";
+            return esc(d + " · " + v.title);
           }).join("<br>")
         : "none open";
 
@@ -63,7 +64,7 @@
         row("Tax delinquency", delinq, "Dept. of Revenue, June 2022 snapshot") +
         row("Open violations", vio, "L&I violations (live dataset)") +
         row("Market value", esc(dollars(p.market_value)), "OPA assessment") +
-        row("Last sale", p.sale_date ? esc(p.sale_date) + (p.sale_price != null ? " for " + esc(dollars(p.sale_price)) : "") : null,
+        row("Last sale", p.sale_date ? esc(String(p.sale_date).slice(0, 10)) + (p.sale_price != null ? " for " + esc(dollars(p.sale_price)) : "") : null,
             "OPA assessment") +
         row("Owner mailing address", esc(p.mailing_addr), "OPA / Revenue records") +
         "</table>" +
