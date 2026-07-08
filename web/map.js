@@ -138,9 +138,29 @@
     input.value = r.address;
     map.setView([r.lat, r.lon], 18);
     L.popup().setLatLng([r.lat, r.lon]).setContent(
-      "<b>" + r.address + "</b><br>" + (r.owner || "owner unknown") +
+      "<b>" + r.address + "</b>" + (r.owner ? "<br>" + r.owner : "") +
       "<br>accountability score " + r.score +
       '<br><a href="parcel.html#' + r.opa_id + '">full receipt →</a>').openOn(map);
+  }
+
+  /* static-demo fallback: prefix search over the exported address index,
+     joined with the points already in memory */
+  var addrIndex = null, byOpa = null;
+  function staticSearch(q) {
+    if (!byOpa) {
+      byOpa = {};
+      points.forEach(function (p) { byOpa[p[2]] = p; });
+    }
+    var qn = q.toUpperCase().split(/\s+/).join(" ");
+    var out = [];
+    for (var i = 0; i < addrIndex.length && out.length < 25; i++) {
+      if (addrIndex[i][1].indexOf(qn) === 0) {
+        var p = byOpa[addrIndex[i][0]];
+        if (p) out.push({ opa_id: p[2], address: addrIndex[i][1], owner: null,
+                          score: p[3], lat: p[1], lon: p[0] });
+      }
+    }
+    return out;
   }
 
   input.addEventListener("input", function () {
@@ -148,10 +168,16 @@
     var q = input.value.trim();
     if (q.length < 3) { items = []; render(); return; }
     timer = setTimeout(function () {
-      fetch("/api/search?q=" + encodeURIComponent(q))
-        .then(function (r) { return r.json(); })
+      fetch("api/search?q=" + encodeURIComponent(q))
+        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
         .then(function (data) { items = data.results; active = -1; render(); })
-        .catch(function () { items = []; render(); });
+        .catch(function () {
+          if (addrIndex) { items = staticSearch(q); active = -1; render(); return; }
+          fetch("data/addresses.json")
+            .then(function (r) { return r.json(); })
+            .then(function (idx) { addrIndex = idx; items = staticSearch(q); active = -1; render(); })
+            .catch(function () { items = []; render(); });
+        });
     }, 150);
   });
 

@@ -32,7 +32,7 @@
     var q = input.value.trim();
     if (!q) return;
     show("thinking… (checking the database)");
-    fetch("/api/ask", {
+    fetch("api/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: q })
@@ -52,7 +52,9 @@
           (cites ? '<div class="cites">verified records: ' + cites + "</div>" : ""));
       })
       .catch(function () {
-        show('<span class="error">request failed</span>');
+        show("The grounded AI layer runs in the local install with an API key " +
+          '(<a href="https://github.com/lllove514/empty-homes">setup in the README</a>). ' +
+          "Everything else on this demo is live: the map, search, receipts, and the leaderboard.");
       });
   });
 

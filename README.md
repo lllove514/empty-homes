@@ -2,6 +2,8 @@
 
 A public map of every likely-vacant property in Philadelphia: who owns it, how long it has sat empty and tax-delinquent, and a way for anyone to pull the receipts on a house, a block, or the landlord holding the most.
 
+**Live demo: [lllove514.github.io/empty-homes](https://lllove514.github.io/empty-homes/)** (map, block search, parcel receipts, leaderboard, and the open-data downloads, rebuilt weekly from the city's APIs; the AI layer and letter drafts run in the local install)
+
 ![Citywide map of 36,713 likely-vacant properties](docs/map.png)
 
 ## What the data shows (July 2026 build)

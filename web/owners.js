@@ -25,8 +25,14 @@
 
   function renderBoard(kind) {
     if (FILTERS.every(function (f) { return f[0] !== kind; })) kind = "";
-    fetch("/api/owners" + (kind ? "?kind=" + kind : ""))
-      .then(function (r) { return r.json(); })
+    fetch("api/owners" + (kind ? "?kind=" + kind : ""))
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .catch(function () {
+        /* static-demo fallback */
+        return fetch("data/owners_top.json")
+          .then(function (r) { return r.json(); })
+          .then(function (top) { return { owners: top[kind || "all"] }; });
+      })
       .then(function (data) {
         var owners = data.owners;
         var top = owners[0];
@@ -66,8 +72,13 @@
   }
 
   function renderOwner(id) {
-    fetch("/api/owner/" + id)
+    fetch("api/owner/" + id)
       .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .catch(function () {
+        /* static-demo fallback: exported for owners on the board */
+        return fetch("data/owners/" + id + ".json")
+          .then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
+      })
       .then(function (o) {
         var clusterHtml = "";
         if (o.cluster && o.cluster.length) {
@@ -99,7 +110,9 @@
         window.scrollTo(0, 0);
       })
       .catch(function () {
-        main.innerHTML = "<p class='error'>No such owner. <a href='owners.html'>Back to the board.</a></p>";
+        main.innerHTML = "<p class='error'>This owner's page is not in the static demo " +
+          "(only owners on the board are exported). Run the project locally for every owner. " +
+          "<a href='owners.html'>Back to the board.</a></p>";
       });
   }
 
