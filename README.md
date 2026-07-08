@@ -19,7 +19,7 @@ The city's own records, joined for the first time in one place:
 | Open L&I violations on vacant parcels | **34,418** |
 | Largest shell network found by entity resolution | **32 LLCs sharing one Center City mailing address, holding 409 vacant parcels** |
 
-Built with and for [Poor People's Army](https://ppehrc.org) (PPEHRC), the Philadelphia housing-rights movement whose core argument is exactly this: homes sit empty while people sleep outside. The facts were always public. They just lived in four city datasets that do not talk to each other.
+Built with and for [Poor People's Army](https://www.poorpeoplesarmy.org/) (PPEHRC), the Philadelphia housing-rights movement whose core argument is exactly this: homes sit empty while people sleep outside. The facts were always public. They just lived in four city datasets that do not talk to each other.
 
 ## What it does
 
