@@ -34,8 +34,9 @@
   var PointsLayer = L.Layer.extend({
     onAdd: function (m) {
       this._map = m;
-      this._canvas = L.DomUtil.create("canvas", "leaflet-layer");
+      this._canvas = L.DomUtil.create("canvas", "leaflet-layer leaflet-zoom-animated");
       this._canvas.style.pointerEvents = "none";
+      this._canvas.style.transformOrigin = "0 0";
       m.getPanes().overlayPane.appendChild(this._canvas);
       m.on("moveend viewreset resize", this._reset, this);
       m.on("zoomanim", this._animateZoom, this);
