@@ -141,8 +141,15 @@ def main():
         avg_years_owed = (SELECT round(avg(years_owed),1) FROM parcels p
                           WHERE p.owner_id = owners.id AND years_owed IS NOT NULL)
     """)
-    con.execute("UPDATE parcels SET score = score + 3 WHERE owner_id IN "
-                "(SELECT id FROM owners WHERE kind='public')")
+    # full recompute so re-running this script never double-counts a bonus
+    con.execute("""
+      UPDATE parcels SET score =
+        min(coalesce(years_owed, 0), 10)
+        + min(coalesce(open_violations, 0), 5)
+        + (CASE WHEN upper(coalesce(sheriff_sale,'')) IN ('Y','TRUE') THEN 2 ELSE 0 END)
+        + (CASE WHEN owner_id IN (SELECT id FROM owners WHERE kind='public')
+                THEN 3 ELSE 0 END)
+    """)
     con.commit()
 
     n_owners = con.execute("SELECT count(*) FROM owners").fetchone()[0]
