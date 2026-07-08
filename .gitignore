@@ -2,3 +2,6 @@ data/
 .env
 __pycache__/
 *.pyc
+worker/d1_import.sql
+worker/.wrangler/
+worker/.dev.vars

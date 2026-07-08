@@ -2,7 +2,7 @@
 
 A public map of every likely-vacant property in Philadelphia: who owns it, how long it has sat empty and tax-delinquent, and a way for anyone to pull the receipts on a house, a block, or the landlord holding the most.
 
-**Live demo: [lllove514.github.io/empty-homes](https://lllove514.github.io/empty-homes/)** (map, block search, parcel receipts, leaderboard, and the open-data downloads, rebuilt weekly from the city's APIs; the AI layer and letter drafts run in the local install)
+**Live demo: [lllove514.github.io/empty-homes](https://lllove514.github.io/empty-homes/)** (map, block search, parcel receipts, leaderboard, open-data downloads, and the grounded ask-the-data layer, rebuilt weekly from the city's APIs; letter drafts run in the local install)
 
 ![Citywide map of 36,713 likely-vacant properties](docs/map.png)
 
@@ -31,7 +31,7 @@ Built with and for [Poor People's Army](https://www.poorpeoplesarmy.org/) (PPEHR
 
 ![Leaderboard of owners with the most vacant properties](docs/leaderboard.png)
 
-**Ask the data.** A grounded Claude layer answers plain-language questions ("publicly owned, tax delinquent 5+ years in 19133"). The model can only speak through three read-only database tools, must cite every claim as `[opa:...]` or `[owner:...]`, and the server verifies every citation against that request's actual tool results before releasing the answer. Unverifiable citation, no answer. The model cannot invent a property.
+**Ask the data.** A grounded Claude layer answers plain-language questions ("publicly owned, tax delinquent 5+ years in 19133"). The model can only speak through three read-only database tools, must cite every claim as `[opa:...]` or `[owner:...]`, and the server verifies every citation against that request's actual tool results before releasing the answer. Unverifiable citation, no answer. No citations at all, no answer either, so the model can't be talked into general chat: text that isn't anchored to the database never leaves the server. The model cannot invent a property. On the live demo this runs as a Cloudflare Worker with the database in D1 (see `worker/`), same rules, rate-limited and capped so it stays a data tool and nothing else.
 
 **Take action.** One click drafts a Pennsylvania Right-to-Know request, a council office letter, or a testimony paragraph, filled from the parcel's record by plain template substitution. No model in that path on purpose: an artifact a person signs and sends should contain nothing a model could get wrong.
 
@@ -48,7 +48,9 @@ python3 server/app.py           # serve at http://localhost:8080  (PORT=8090 to 
 
 For the AI layer, put a key in `.env` at the repo root: `ANTHROPIC_API_KEY=sk-...`. Everything else works without it.
 
-Every pipeline stage has a `--check` mode that validates its output against the source, and `pipeline/check_db.py --live` re-fetches random parcels from the city's API and compares them to the built database to the cent. `server/test_grounding.py` proves the citation verifier fails closed, offline.
+Every pipeline stage has a `--check` mode that validates its output against the source, and `pipeline/check_db.py --live` re-fetches random parcels from the city's API and compares them to the built database to the cent. `server/test_grounding.py` and `worker/test_grounding.mjs` prove the citation verifier fails closed, offline, in both implementations.
+
+To deploy the ask layer for the public demo (Cloudflare Worker + D1, free tier), see `worker/README.md`.
 
 ## Data sources
 

@@ -1,6 +1,12 @@
-/* Ask panel: grounded answers with verified citations. */
+/* Ask panel: grounded answers with verified citations.
+   On the local install the Python server answers at api/ask. On the public
+   demo (GitHub Pages, which can't run code) the same logic runs as a
+   Cloudflare Worker; see worker/README.md. */
 (function () {
   "use strict";
+  var ENDPOINT = location.hostname.endsWith("github.io")
+    ? "https://empty-homes-ask.jellybot.workers.dev"
+    : "api/ask";
   var form = document.getElementById("askform");
   var input = document.getElementById("askq");
   var out = document.getElementById("askout");
@@ -32,7 +38,7 @@
     var q = input.value.trim();
     if (!q) return;
     show("thinking… (checking the database)");
-    fetch("api/ask", {
+    fetch(ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: q })
@@ -52,9 +58,9 @@
           (cites ? '<div class="cites">verified records: ' + cites + "</div>" : ""));
       })
       .catch(function () {
-        show("The grounded AI layer runs in the local install with an API key " +
-          '(<a href="https://github.com/lllove514/empty-homes">setup in the README</a>). ' +
-          "Everything else on this demo is live: the map, search, receipts, and the leaderboard.");
+        show("Couldn't reach the AI layer. The map, search, receipts, and " +
+          "leaderboard all still work; try the question again in a minute, or " +
+          '<a href="https://github.com/lllove514/empty-homes">run it locally</a>.');
       });
   });
 

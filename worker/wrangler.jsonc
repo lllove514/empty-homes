@@ -1,0 +1,13 @@
+{
+	"name": "empty-homes-ask",
+	"main": "index.js",
+	"compatibility_date": "2026-06-21",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "empty-homes",
+			"database_id": "cc48700b-6299-4ad7-b2ac-8079a0f5d293",
+			"remote": true
+		}
+	]
+}
